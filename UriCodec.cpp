@@ -3,44 +3,44 @@
 //
 // Based (heavily) on an article from CodeGuru
 // http://www.codeguru.com/cpp/cpp/string/conversions/article.php/c12759
-
+#include "uri_codec.h"
 #include <string>
 #include <assert.h>
 
-const char HEX2DEC[256] = 
+const char HEX2DEC[256] =
 {
     /*       0  1  2  3   4  5  6  7   8  9  A  B   C  D  E  F */
     /* 0 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 1 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 2 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 3 */  0, 1, 2, 3,  4, 5, 6, 7,  8, 9,-1,-1, -1,-1,-1,-1,
-    
+
     /* 4 */ -1,10,11,12, 13,14,15,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 5 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 6 */ -1,10,11,12, 13,14,15,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 7 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
-    
+
     /* 8 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* 9 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* A */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* B */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
-    
+
     /* C */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* D */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* E */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
     /* F */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1
 };
-    
+
 std::string UriDecode(const std::string & sSrc)
 {
     // Note from RFC1630:  "Sequences which start with a percent sign
     // but are not followed by two hexadecimal characters (0-9, A-F) are reserved
     // for future extension"
-    
+
     const unsigned char * pSrc = (const unsigned char *)sSrc.c_str();
 	const int SRC_LEN = sSrc.length();
     const unsigned char * const SRC_END = pSrc + SRC_LEN;
-    const unsigned char * const SRC_LAST_DEC = SRC_END - 2;   // last decodable '%' 
+    const unsigned char * const SRC_LAST_DEC = SRC_END - 2;   // last decodable '%'
 
     char * const pStart = new char[SRC_LEN];
     char * pEnd = pStart;
@@ -79,17 +79,17 @@ const char SAFE[256] =
     /* 1 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* 2 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* 3 */ 1,1,1,1, 1,1,1,1, 1,1,0,0, 0,0,0,0,
-    
+
     /* 4 */ 0,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1,
     /* 5 */ 1,1,1,1, 1,1,1,1, 1,1,1,0, 0,0,0,0,
     /* 6 */ 0,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1,
     /* 7 */ 1,1,1,1, 1,1,1,1, 1,1,1,0, 0,0,0,0,
-    
+
     /* 8 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* 9 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* A */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* B */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
-    
+
     /* C */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* D */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
     /* E */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
@@ -107,7 +107,7 @@ std::string UriEncode(const std::string & sSrc)
 
     for (; pSrc < SRC_END; ++pSrc)
 	{
-		if (SAFE[*pSrc]) 
+		if (SAFE[*pSrc])
             *pEnd++ = *pSrc;
         else
         {
@@ -141,7 +141,7 @@ static UriCodecTest test;   // auto run the test
 UriCodecTest::UriCodecTest()
 {
     assert(UriEncode("ABC") == "ABC");
-    
+
     const std::string ORG("\0\1\2", 3);
     const std::string ENC("%00%01%02");
     assert(UriEncode(ORG) == ENC);
