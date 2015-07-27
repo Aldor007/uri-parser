@@ -3,7 +3,8 @@
 //
 // Based (heavily) on an article from CodeGuru
 // http://www.codeguru.com/cpp/cpp/string/conversions/article.php/c12759
-#include "uri_codec.h"
+
+#include "UriCodec.h"
 #include <string>
 #include <assert.h>
 
