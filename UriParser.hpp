@@ -4,8 +4,7 @@
 
 namespace http {
     struct url {
-        std::string protocol, user, password, host, path, query;
-        int port;
+        std::string protocol, user, password, host, path, query, fragment, port;
     };
 
 
@@ -41,14 +40,13 @@ namespace http {
 
 
     //--- Extractors -------------------------------------------------------------------~
-    static inline int ExtractPort(std::string &hostport) {
-        int port;
+    static inline std::string ExtractPort(std::string &hostport) {
         std::string portstring = TailSlice(hostport, ":");
-        return  atoi(portstring.c_str());
+        return  portstring;
     }
 
     static inline std::string ExtractPath(std::string &in) { return TailSlice(in, "/", true); }
-    static inline std::string ExtractProtocol(std::string &in) { return HeadSlice(in, "://"); }
+    static inline std::string ExtractProtocol(std::string &in) { return HeadSlice(in, "//"); }
     static inline std::string ExtractQuery(std::string &in) { return TailSlice(in, "?"); }
     static inline std::string ExtractPassword(std::string &userpass) { return TailSlice(userpass, ":"); }
     static inline std::string ExtractUserpass(std::string &in) { return HeadSlice(in, "@"); }
@@ -57,17 +55,24 @@ namespace http {
     //--- Public Interface -------------------------------------------------------------~
     static inline url ParseHttpUrl(std::string &in) {
         url ret;
-        ret.port = 80;
 
         ret.protocol = ExtractProtocol(in);
         ret.query = ExtractQuery(in);
+        size_t fragmentPos = ret.query.find("#");
+        if (fragmentPos < std::string::npos) {
+            ret.fragment = ret.query.substr(fragmentPos + 1, ret.query.length());
+            ret.query = ret.query.substr(0, fragmentPos);
+        }
         ret.path = ExtractPath(in);
         std::string userpass = ExtractUserpass(in);
         ret.password = ExtractPassword(userpass);
         ret.user = userpass;
         ret.port = ExtractPort(in);
-        ret.host = in;
-
+        if (!ret.protocol.empty()) {
+            ret.host = in;
+        } else if (ret.path.empty()) {
+            ret.path = in;
+        }
         return ret;
     }
 }
